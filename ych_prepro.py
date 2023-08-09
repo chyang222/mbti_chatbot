@@ -21,4 +21,4 @@ mbti['N/S'] = mbti['type'].apply(lambda x: 0 if x[1] == 'N' else 1)
 mbti['F/T'] = mbti['type'].apply(lambda x: 0 if x[2] == 'F' else 1)
 mbti['J/P'] = mbti['type'].apply(lambda x: 0 if x[3] == 'J' else 1)
 
-mbti.to_csv("C:\\Users\\user\\Desktop\\kaggle_MBTI\\MBTI 500.csv")
+mbti.to_csv("C:\\Users\\user\\Desktop\\kaggle_MBTI\\MBTI 500.csv", index = False)
