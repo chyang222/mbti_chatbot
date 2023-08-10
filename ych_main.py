@@ -42,6 +42,7 @@ def extract_nouns(text):
 
     return ' '.join(nouns)
 
+
 def count_vectorizer(vectorizer, df, train_mode):
     df.facts = df.facts.apply(extract_nouns)
     if train_mode:
