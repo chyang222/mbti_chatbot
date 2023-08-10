@@ -15,14 +15,14 @@ import re
 
 from sklearn.feature_extraction.text import CountVectorizer
 import nltk
-nltk.download()
 nltk.download('punkt')
 nltk.download('averaged_perceptron_tagger')
 nltk.download('stopwords')
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 
-mbti = pd.read_csv("C:\\Users\\user\\Desktop\\kaggle_MBTI\\MBTI 500.csv")
+mbti = pd.read_csv("C:\\Users\\user\\Desktop\\kaggle_MBTI\\MBTI_prepro.csv")
+mbti.drop("Unnamed: 0", axis=1, inplace=True)
 
 def extract_nouns(text): 
     stop_words_list = stopwords.words('english')
@@ -56,4 +56,7 @@ def count_vectorizer(vectorizer, df, train_mode):
 
     return data
 
-mbti.posts.apply(extract_nouns)
+
+mbti.posts = mbti.posts.apply(extract_nouns)
+
+#mbti.to_csv("C:\\Users\\user\\Desktop\\kaggle_MBTI\\MBTI_prepro.csv", index = False)
