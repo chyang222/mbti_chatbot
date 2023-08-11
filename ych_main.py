@@ -58,7 +58,7 @@ count_vect = CountVectorizer()
 recreate_model=False
 
 # We'll save the model into a file:
-filename = 'mbti_svm_v2.sav'
+filename = 'C:\\Users\\user\\Desktop\\mbti_chatbot\\mbti_svm_v2.sav'
 
 # If the model file doesn't exists
 if not os.path.isfile(filename):
