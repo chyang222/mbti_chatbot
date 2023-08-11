@@ -42,22 +42,11 @@ def extract_nouns(text):
 
     return ' '.join(nouns)
 
-
-def count_vectorizer(vectorizer, df, train_mode):
-    df.facts = df.facts.apply(extract_nouns)
-    if train_mode:
-        data = vectorizer.fit_transform(df.facts)
-    else:
-        data = vectorizer.transform(df.facts)
-    
-    X_party1 = vectorizer.transform(df['first_party'])
-    X_party2 = vectorizer.transform(df['second_party'])
-
-    data = np.concatenate([X_party1.todense(), X_party2.todense(), data.todense()], axis=1)
-
-    return data
-
-
 mbti.posts = mbti.posts.apply(extract_nouns)
+
+
+#이미 폴더에 명사만 있으니까 이거 counter vecterrizor 한다음 모델링 대신 4개로 나눠서 오케바리 ? -> 데이터는 준영이가 재수집하긴 해야댐
+#아 그리고 구글 트랜스레이터도 가지고 오자 input 한국어를 영어로 치환
+# 그리고 결과 바로 나오면 chatbot이랑 연동부터 해버리자
 
 #mbti.to_csv("C:\\Users\\user\\Desktop\\kaggle_MBTI\\MBTI_prepro.csv", index = False)
