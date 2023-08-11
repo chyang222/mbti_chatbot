@@ -15,8 +15,15 @@ import re
 from sklearn.feature_extraction.text import CountVectorizer
 import nltk
 from nltk.stem.snowball import SnowballStemmer
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.pipeline import Pipeline
+from sklearn.svm import LinearSVC
+import pickle
+from sklearn import metrics
+from sklearn.metrics import classification_report, f1_score
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
+from sklearn.model_selection import train_test_split
 
 mbti = pd.read_csv("C:\\Users\\user\\Desktop\\kaggle_MBTI\\MBTI_prepro.csv")
 
@@ -44,6 +51,52 @@ def stemm(text):
     stemmer = SnowballStemmer(language='english')
     return stemmer.stem(text)
 
+count_vect = CountVectorizer()
+
+
+# Flag to re-create or not the machine learning model
+recreate_model=False
+
+# We'll save the model into a file:
+filename = 'mbti_svm_v2.sav'
+
+# If the model file doesn't exists
+if not os.path.isfile(filename):
+    recreate_model=True
+
+
+X = mbti['posts'] # features
+y = mbti['type']  # labels
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# Check if need to recreate the model
+if recreate_model:    
+    
+    # Creating an instance to vectorizer:
+    vectorizer = TfidfVectorizer()
+    
+    # Training the vectorizer:
+    X_train_tfidf = vectorizer.fit_transform(X_train)
+    
+    # Training the classifier:
+    clf = LinearSVC()
+    clf.fit(X_train_tfidf, y_train)
+    
+    # Pipelining the vectorizer and the classifier
+    text_clf = Pipeline([('tfidf',TfidfVectorizer()),('clf',LinearSVC())])
+    text_clf.fit(X_train, y_train)
+    
+    # saving the model to disk
+    pickle.dump(text_clf, open(filename, 'wb'))
+
+# If there is no need to recreate the model, just open the file from the disk    
+else:
+    # loading the model from disk
+    text_clf = pickle.load(open(filename, 'rb'))
+
+
+predictions = text_clf.predict(X_test)
+print(classification_report(y_test, predictions))
 
 
 
