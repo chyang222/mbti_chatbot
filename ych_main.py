@@ -12,17 +12,14 @@ import os
 import datetime
 from logging.config import dictConfig
 import re
-from sklearn.feature_extraction.text import CountVectorizer
 import nltk
 from nltk.stem.snowball import SnowballStemmer
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.pipeline import Pipeline
 from sklearn.svm import LinearSVC
 import pickle
-from sklearn import metrics
-from sklearn.metrics import classification_report, f1_score
+from googletrans import Translator
 from nltk.corpus import stopwords
-from nltk.tokenize import word_tokenize
 from sklearn.model_selection import train_test_split
 
 mbti = pd.read_csv("C:\\Users\\user\\Desktop\\kaggle_MBTI\\MBTI_prepro.csv")
@@ -51,8 +48,15 @@ def stemm(text):
     stemmer = SnowballStemmer(language='english')
     return stemmer.stem(text)
 
+#한국어를 영어로 변환
+def translate_word(word):
+    translator = Translator()
+    translated_word = translator.translate(word, src= 'ko')
+    return translated_word.text
+
 #챗봇으로 받은 데이터를 str으로 계속 쌓고 이를 명사, 원형화한 다음 모델이 인식할 수 있게 시리즈 형태로 변환?
 def input_test(text):
+    text = translate_word(text)
     text = pd.Series(text)
     text = text.apply(lambda x: x.lower())
     text = text.apply(extract_nouns)
@@ -97,19 +101,20 @@ while cnt != 0:
     text += a
     cnt -= 1
 
+text = translate_word(ext)
 testset = input_test(text)
 text_clf.predict(testset)
 '''
 
 if __name__=="__main__":
     text_clf = model()
-    a ="I really like being outside, I like being listened to and I like to set a time when I go on a trip, and I have a lot of imaginations.",'I Love you'
+    #a ="I really like being outside, I like being listened to and I like to set a time when I go on a trip, and I have a lot of imaginations, I love you"
+    a = "난 밖에 있는게 좋구요 그리고 여행계획짜는걸 좋아해요, 사랑합니다"
     a = input_test(a)
     z = text_clf.predict(a)
 
 
-#이미 폴더에 명사만 있으니까 이거 counter vecterrizor 한다음 모델링 대신 4개로 나눠서 오케바리 ? -> 데이터는 준영이가 재수집하긴 해야댐
-#아 그리고 구글 트랜스레이터도 가지고 오자 input 한국어를 영어로 치환
-# 그리고 결과 바로 나오면 chatbot이랑 연동부터 해버리자
+#모델링 4개를 못했는데 어쩌지   -> 모델링은 어차피 이진분류모델 4개만 만들어버리면 댐
+# 데이터를 ""에 계속 쌓는 느낌으로 가야댐! -> 나쁘지 않음 chatbot 연동대고 시작하면 댈듯
 
-#mbti.to_csv("C:\\Users\\user\\Desktop\\kaggle_MBTI\\MBTI_prepro.csv", index = False)
+# 그리고 결과 바로 나오면 chatbot이랑 연동부터 해버리자
