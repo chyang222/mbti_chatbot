@@ -51,54 +51,61 @@ def stemm(text):
     stemmer = SnowballStemmer(language='english')
     return stemmer.stem(text)
 
-count_vect = CountVectorizer()
+#챗봇으로 받은 데이터를 str으로 계속 쌓고 이를 명사, 원형화한 다음 모델이 인식할 수 있게 시리즈 형태로 변환?
+def input_test(text):
+    text = pd.Series(text)
+    text = text.apply(lambda x: x.lower())
+    text = text.apply(extract_nouns)
+    result = text.apply(stemm)
+    return result
 
 
-# Flag to re-create or not the machine learning model
-recreate_model=False
-
-# We'll save the model into a file:
-filename = 'C:\\Users\\user\\Desktop\\mbti_chatbot\\mbti_svm_v2.sav'
-
-# If the model file doesn't exists
-if not os.path.isfile(filename):
-    recreate_model=True
-
-
-X = mbti['posts'] # features
-y = mbti['type']  # labels
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-
-# Check if need to recreate the model
-if recreate_model:    
+def model():
+    recreate_model=False
+    filename = 'C:\\Users\\user\\Desktop\\mbti_chatbot\\mbti_svm_v2.sav'
     
-    # Creating an instance to vectorizer:
-    vectorizer = TfidfVectorizer()
+    if not os.path.isfile(filename):
+        recreate_model=True
+
+    X = mbti['posts'] # features
+    y = mbti['type']  # labels
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+    if recreate_model:    
+        vectorizer = TfidfVectorizer()
+        X_train_tfidf = vectorizer.fit_transform(X_train)
+        clf = LinearSVC()
+        clf.fit(X_train_tfidf, y_train)
+        text_clf = Pipeline([('tfidf',vectorizer),('clf',LinearSVC())])
+        text_clf.fit(X_train, y_train)
+        pickle.dump(text_clf, open(filename, 'wb'))
+        return text_clf
+    else:
+        text_clf = pickle.load(open(filename, 'rb'))
+        return text_clf
     
-    # Training the vectorizer:
-    X_train_tfidf = vectorizer.fit_transform(X_train)
-    
-    # Training the classifier:
-    clf = LinearSVC()
-    clf.fit(X_train_tfidf, y_train)
-    
-    # Pipelining the vectorizer and the classifier
-    text_clf = Pipeline([('tfidf',TfidfVectorizer()),('clf',LinearSVC())])
-    text_clf.fit(X_train, y_train)
-    
-    # saving the model to disk
-    pickle.dump(text_clf, open(filename, 'wb'))
 
-# If there is no need to recreate the model, just open the file from the disk    
-else:
-    # loading the model from disk
-    text_clf = pickle.load(open(filename, 'rb'))
+    #predictions = text_clf.predict(X_test)
+    #print(classification_report(y_test, predictions))
 
 
-predictions = text_clf.predict(X_test)
-print(classification_report(y_test, predictions))
+'''
+cnt = 2
+text = ""
+while cnt != 0:
+    a = input("입력: ") 
+    text += a
+    cnt -= 1
 
+testset = input_test(text)
+text_clf.predict(testset)
+'''
 
+if __name__=="__main__":
+    text_clf = model()
+    a ="I really like being outside, I like being listened to and I like to set a time when I go on a trip, and I have a lot of imaginations.",'I Love you'
+    a = input_test(a)
+    z = text_clf.predict(a)
 
 
 #이미 폴더에 명사만 있으니까 이거 counter vecterrizor 한다음 모델링 대신 4개로 나눠서 오케바리 ? -> 데이터는 준영이가 재수집하긴 해야댐

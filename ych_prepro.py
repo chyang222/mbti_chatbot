@@ -19,15 +19,12 @@ mbti['posts'][0]
 mbti['type'].unique()
 mbti.isnull().sum()
 
-
 df_bar_chart=mbti.groupby('type').count()
 trace1 = go.Bar(x=df_bar_chart.index, y=df_bar_chart['posts'])
 data = [trace1]
 layout = go.Layout(title='MBTI # Classified Posts per Type')
 fig = go.Figure(data=data, layout=layout)
 fig.show()
-
-
 
 
 mbti['E/I'] = mbti['type'].apply(lambda x: 0 if x[0] == 'E' else 1)
