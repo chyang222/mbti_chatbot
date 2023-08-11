@@ -12,18 +12,15 @@ import os
 import datetime
 from logging.config import dictConfig
 import re
-
 from sklearn.feature_extraction.text import CountVectorizer
 import nltk
-nltk.download('punkt')
-nltk.download('averaged_perceptron_tagger')
-nltk.download('stopwords')
+from nltk.stem.snowball import SnowballStemmer
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 
 mbti = pd.read_csv("C:\\Users\\user\\Desktop\\kaggle_MBTI\\MBTI_prepro.csv")
-mbti.drop("Unnamed: 0", axis=1, inplace=True)
 
+#명사만 태깅
 def extract_nouns(text): 
     stop_words_list = stopwords.words('english')
     nouns = []
@@ -42,7 +39,13 @@ def extract_nouns(text):
 
     return ' '.join(nouns)
 
-mbti.posts = mbti.posts.apply(extract_nouns)
+#원형화 위에거랑 합치면댐
+def stemm(text):
+    stemmer = SnowballStemmer(language='english')
+    return stemmer.stem(text)
+
+
+
 
 
 #이미 폴더에 명사만 있으니까 이거 counter vecterrizor 한다음 모델링 대신 4개로 나눠서 오케바리 ? -> 데이터는 준영이가 재수집하긴 해야댐
