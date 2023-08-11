@@ -6,29 +6,12 @@ import torch
 tokenizer = AutoTokenizer.from_pretrained("taeminlee/kodialogpt2-base")
 model = AutoModelForCausalLM.from_pretrained("taeminlee/kodialogpt2-base")
 
+tokenizer = PreTrainedTokenizerFast.from_pretrained("taeminlee/kodialogpt2-base", bos_token='</s>', eos_token='</s>', unk_token='<unk>', pad_token='<pad>', mask_token='<mask>')
+
 
 inputs = tokenizer("안녕!", return_tensors="pt")
 outputs = model(**inputs)
 
 
-predicted_token_indices = torch.argmax(outputs.logits, dim=-1)
-predicted_texts = [tokenizer.decode(indices, skip_special_tokens=True) for indices in predicted_token_indices]
-
-for text in predicted_texts:
-    print(text)
-
-with torch.no_grad():
-    while 1:
-        q = input("user > ").strip()
-        if q == "quit":
-            break
-        a = ""
-        while 1:
-            input_ids = torch.LongTensor(model.encode(Q_TKN + q + SENT + sent + A_TKN + a)).unsqueeze(dim=0)
-            pred = model(input_ids)
-            pred = pred.logits
-            gen = model.convert_ids_to_tokens(torch.argmax(pred, dim=-1).squeeze().numpy().tolist())[-1]
-            if gen == EOS:
-                break
-            a += gen.replace("▁", " ")
-        print("Chatbot > {}".format(a.strip()))
+##오케이 chatbot은 word2vec 모델같은 느낌이 아니니까 그럴빠엔 기본 예제의 모델로 먼저 pytorch 명령어들을 익히자.
+## 위의 모델로서 바꾸자 
