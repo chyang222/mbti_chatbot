@@ -6,7 +6,6 @@ import torch
 tokenizer = AutoTokenizer.from_pretrained("taeminlee/kodialogpt2-base")
 model = AutoModelForCausalLM.from_pretrained("taeminlee/kodialogpt2-base")
 
-df = pd.DataFrame()
 tokenizer = PreTrainedTokenizerFast.from_pretrained("taeminlee/kodialogpt2-base", bos_token='</s>', eos_token='</s>', unk_token='<unk>', pad_token='<pad>', mask_token='<mask>')
 
 
