@@ -105,7 +105,7 @@ text = translate_word(ext)
 testset = input_test(text)
 text_clf.predict(testset)
 '''
-
+df = pd.DataFrame()
 if __name__=="__main__":
     text_clf = model()
     #a ="I really like being outside, I like being listened to and I like to set a time when I go on a trip, and I have a lot of imaginations, I love you"
